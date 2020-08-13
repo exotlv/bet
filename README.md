@@ -1,59 +1,64 @@
-kino-test  Build Status
-CucumberJVM template project for running tests in parallel.
+=======================
 
-This project was based on Selenium-Maven-Template and support for CucumberJVM was added
+CucumberJVM template project for running tests in parallel. 
 
-How to run
+This project was based on [Selenium-Maven-Template](https://github.com/Ardesco/Selenium-Maven-Template) and support for CucumberJVM was added
 
-Execution options
-
-One "Runner" class per thread (use profile parallel). By "Runner" class is meant RunCukesCheeseTest class in this example.
-NOTE - in order to use this approach, you will need to create separate "runner" class per one thread. Tests belonging to one "runner" class will be executed sequentially.
-More on this read here.
-Using cucumber-jvm-parallel-plugin (use profile parallelPlugin)
-cucumber-jvm-parallel-plugin will automatically generates "runner" classes.
-More on this read here.
-Command for execution
-
+## How to run
+### Execution options
+ 1. One "Runner" class per thread (use profile `parallel`). By "Runner" class is mean *RunCukesCheeseTest* class in this example.
+    * **NOTE** - in order to use this approach, you will need to create separate "runner" class per one thread. Tests belonging to one "runner" class will be executed sequentially.
+    * More on this read [here](https://opencredo.com/running-cucumber-jvm-tests-in-parallel/).
+ 2. Using [cucumber-jvm-parallel-plugin](https://github.com/temyers/cucumber-jvm-parallel-plugin) (use profile `parallelPlugin`)
+    * *cucumber-jvm-parallel-plugin* will automatically generates "runner" classes.
+    * More on this read [here](http://automationrhapsody.com/running-cucumber-tests-in-parallel/).
+### Command for execution
+```
 ./mvnw clean verify -P [nogrid OR grid],[parallel OR parallelPlugin] -Dthreads=[number of parallel threads]
-parallel - when using separate "runner" class per one thread
-parallelPlugin - uses cucumber-jvm-parallel-plugin. Automatically creates separate "runner" class per one thread
-nogrid - execute tests locally
-grid - execute tests on Selenium Grid. Grid Hub can be set in pom by using seleniumGridUrl property or in ApplicationProperties file
-Thread count can be set via -Dthreads argument
-For example, invoking
+```
 
-./mvnw clean verify -P parallelPlugin,nogrid -Dthreads=3 -Dbrowser=chrome -Dcucumber.options="--tags @bet"
-will execute tests in parallel 3 threads on local machine and using cucumber-jvm-parallel-plugin plugin. In addition, -Dbrowser setting will set browser to Chrome.
+* *parallel* - when using separate "runner" class per one thread
+* *parallelPlugin* - uses cucumber-jvm-parallel-plugin. Automatically creates separate "runner" class per one thread
+* *nogrid* - execute tests locally
+* *grid* - execute tests on Selenium Grid. Grid Hub can be set in pom by using `seleniumGridUrl` property or in ApplicationProperties file 
+* Thread count can be set via `-Dthreads` argument
 
-Configuration
+For example, invoking 
+```
+./mvnw clean verify -P parallelPlugin,nogrid -Dthreads=3 -Dbrowser=chrome -Dcucumber.options="--tags @all"
+``` 
+will execute tests in parallel 3 threads on local machine and using *cucumber-jvm-parallel-plugin* plugin. In addition, `-Dbrowser` setting will set browser to Chrome.
 
-Following settings can be changed in lv.iljapavlovs.cucumber.config.ApplicationProperties.java or overriden by from command line by providing -D{configuration key}={value}
+## Configuration
+Following settings can be changed in `lv.vsikhvart.cucumber.config.ApplicationProperties.java` or overriden by from command line by providing `-D{configuration key}={value}` 
 
-Configuration key	Description
-env	environment name
-appUrl	AUT URL
-browser	Browser to use. Available options - chrome, firefox, safari, edge, ie, chrome_headless, firefox_headless
-proxyEnabled	is proxy enabled for Selenium (boolean)
-proxyHost	proxy host
-proxyPort	proxy port
-remoteDriver	should tests be executed on Selenium Grid (boolean)
-seleniumGridRetries	RemoteWebdriver initialization retry count
-seleniumGridUrl	Selenium Grid Hub URL
-waitShortSeconds	timeout for explicit wait - shortest timeout
-waitNormalSeconds	timeout for explicit wait - average timeout
-waitLongSeconds	timeout for explicit wait - longest timeout
-Reporting
+| Configuration key     | Description                                                       |
+|-----------------------|----------------------|
+| *env*   | environment name |
+| *appUrl*       | AUT URL                 |
+| *browser*     | Browser to use. Available options - `chrome, firefox, safari, edge, ie, chrome_headless, firefox_headless`                  |
+| *proxyEnabled*    | is proxy enabled for Selenium (boolean) |
+| *proxyHost* | proxy host                     |
+| *proxyPort* | proxy port                    |
+| *remoteDriver*  | should tests be executed on Selenium Grid (boolean)                       |
+| *seleniumGridRetries* | RemoteWebdriver initialization retry count                |
+| *seleniumGridUrl*     | Selenium Grid Hub URL                 |
+| *waitShortSeconds*    | timeout for explicit wait - shortest timeout |
+| *waitNormalSeconds* | timeout for explicit wait - average timeout                     |
+| *waitLongSeconds* | timeout for explicit wait - longest timeout                      |
 
-Reports are generated by maven-cucumber-reporting plugin and can be found under target/site/cucumber-reports/cucumber-html-reports
 
-Setting up Selenium Grid in Docker Containers
+## Reporting
+Reports are generated by [maven-cucumber-reporting](https://github.com/damianszczepanik/maven-cucumber-reporting) plugin and can be found under *target/site/cucumber-reports/cucumber-html-reports*
 
-Selenium
+## Setting up Selenium Grid in Docker Containers
 
+#### Selenium
+
+```
 docker-compose -f docker/docker-compose-selenium.yml up
-Scaling
+mvnw clean verify -P parallelPlugin,grid -Dthreads=1 -DremoteDriver=true -Dbrowser=chrome -Dcucumber.options="--tags @all"
+```
 
-docker-compose scale selenium-hub=1 firefox=5 chrome=5 
-
-This project uses webdrivermanager tool in order to automate the Selenium browser drivers management in runtime. It will automatically download all needed driver to your local PC if needed with specified version.
+## Driver Download for local execution
+This project uses [webdrivermanager](https://github.com/bonigarcia/webdrivermanager) tool in order to automate the Selenium browser drivers management in runtime. It will **automatically** download all needed driver to your local PC if needed with specified version.
